@@ -5,11 +5,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.scheduler.internal;
+package org.seedstack.scheduler.internal;
 
 import com.google.inject.Injector;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.scheduler.api.Task;
+import org.seedstack.seed.SeedException;
+import org.seedstack.scheduler.Task;
 import org.quartz.Job;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 /**
- * This factory instantiates a {@link Job} wrapping a {@link org.seedstack.seed.scheduler.api.Task}.
+ * This factory instantiates a {@link Job} wrapping a {@link Task}.
  * The task will be initialised with its listeners.
  * A new Job will be created each time the associated trigger will fire.
  *

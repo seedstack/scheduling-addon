@@ -10,4 +10,4 @@
  *
  * @author Pierre Thirouin
  */
-package org.seedstack.seed.scheduler.api;
+package org.seedstack.scheduler;

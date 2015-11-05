@@ -5,15 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.scheduler.internal;
+package org.seedstack.scheduler.internal;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.seedstack.seed.core.api.SeedException;
-import org.seedstack.seed.scheduler.api.Scheduled;
-import org.seedstack.seed.scheduler.api.ScheduledTasks;
-import org.seedstack.seed.scheduler.api.Task;
-import org.seedstack.seed.scheduler.api.TaskListener;
+import org.seedstack.scheduler.Scheduled;
+import org.seedstack.scheduler.ScheduledTasks;
+import org.seedstack.scheduler.Task;
+import org.seedstack.scheduler.TaskListener;
+import org.seedstack.seed.SeedException;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
@@ -33,7 +33,6 @@ import java.util.Map;
 
 /**
  * @author pierre.thirouin@ext.mpsa.com
- *         Date: 08/01/14
  */
 public class SchedulerPlugin extends AbstractPlugin {
 
@@ -52,7 +51,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 
     @Override
     public String name() {
-        return "seed-scheduler-plugin";
+        return "scheduler";
     }
 
     @Override
@@ -62,7 +61,7 @@ public class SchedulerPlugin extends AbstractPlugin {
         return classpathScanRequestBuilder().specification(specificationForJobs).specification(specificationForJobListeners).build();
     }
 
-    @SuppressWarnings("unchecked")
+
     @Override
     public InitState init(InitContext initContext) {
         Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
@@ -77,6 +76,7 @@ public class SchedulerPlugin extends AbstractPlugin {
                 Type typeVariable = getParametrizedTypeOfJobListener(listenerClass);
                 if (typeVariable != null && Task.class.isAssignableFrom((Class<?>) typeVariable)) {
                     // bind the Task to the listener
+                    //noinspection unchecked
                     jobListenerMap.put((Class<? extends Task>) typeVariable, (Class<? extends TaskListener>) listenerClass);
                 }
             }
@@ -95,13 +95,12 @@ public class SchedulerPlugin extends AbstractPlugin {
 
 
     /**
-     * Return the type parameter of the TaskListener interface.
+     * Returns the type parameter of the TaskListener interface.
      *
      * @param listenerClass class to check
      * @return type which extends Task
      * @throws SeedException if no parameter type is present
      */
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private Type getParametrizedTypeOfJobListener(Class<?> listenerClass) {
         Type[] interfaces = listenerClass.getGenericInterfaces();
         Type[] typeParameters = null;
@@ -155,6 +154,7 @@ public class SchedulerPlugin extends AbstractPlugin {
                 if (Task.class.isAssignableFrom(candidateClass)) {
                     Scheduled annotation = candidateClass.getAnnotation(Scheduled.class);
                     if (annotation != null && StringUtils.isNotBlank(annotation.value())) {
+                        //noinspection unchecked
                         Class<? extends Task> taskClass = (Class<? extends Task>) candidateClass;
                         scheduledTasks.scheduledTask(taskClass).schedule();
                     }
