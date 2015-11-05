@@ -5,14 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.seed.scheduler.internal;
+package org.seedstack.scheduler.internal;
 
 import com.google.common.collect.Multimap;
 import com.google.inject.PrivateModule;
 import com.google.inject.multibindings.MapBinder;
-import org.seedstack.seed.scheduler.api.ScheduledTasks;
-import org.seedstack.seed.scheduler.api.Task;
-import org.seedstack.seed.scheduler.api.TaskListener;
+import org.seedstack.scheduler.ScheduledTasks;
+import org.seedstack.scheduler.Task;
+import org.seedstack.scheduler.TaskListener;
 import org.quartz.Scheduler;
 
 import java.util.Collection;
