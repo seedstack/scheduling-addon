@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.scheduler.internal;
 
-import org.seedstack.seed.core.api.ErrorCode;
+import org.seedstack.seed.ErrorCode;
 
 /**
  * Error code for the scheduler support.

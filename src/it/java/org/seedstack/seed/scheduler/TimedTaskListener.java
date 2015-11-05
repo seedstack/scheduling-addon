@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.scheduler;
 
-import org.seedstack.seed.core.api.Logging;
+import org.seedstack.seed.Logging;
 import org.seedstack.seed.scheduler.api.ScheduledTasks;
 import org.seedstack.seed.scheduler.api.SchedulingContext;
 import org.seedstack.seed.scheduler.api.TaskListener;

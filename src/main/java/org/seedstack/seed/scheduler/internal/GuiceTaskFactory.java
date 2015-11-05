@@ -8,7 +8,7 @@
 package org.seedstack.seed.scheduler.internal;
 
 import com.google.inject.Injector;
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.scheduler.api.Task;
 import org.quartz.Job;
 import org.quartz.Scheduler;

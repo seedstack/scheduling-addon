@@ -7,7 +7,7 @@
  */
 package org.seedstack.seed.scheduler.internal;
 
-import org.seedstack.seed.core.api.SeedException;
+import org.seedstack.seed.SeedException;
 import org.seedstack.seed.scheduler.api.Scheduled;
 import org.seedstack.seed.scheduler.api.ScheduledTaskBuilder;
 import org.seedstack.seed.scheduler.api.Task;
