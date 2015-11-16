@@ -4,7 +4,8 @@ addon: "Scheduling"
 repo: "https://github.com/seedstack/scheduling-addon"
 author: "SeedStack"
 description: "Provides easy-to-use support for task scheduling through Quartz."
-min-version: "15.7+"
+min-version: "15.11+"
+backend: true
 menu:
     AddonScheduling:
         weight: 10
