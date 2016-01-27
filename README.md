@@ -1,6 +1,6 @@
 # SeedStack scheduling add-on
 
-[![Build status](https://travis-ci.org/seedstack/scheduling-addon.svg?branch=master)](https://travis-ci.org/seedstack/scheduling-addon) [![Coverage Status](https://coveralls.io/repos/seedstack/scheduling-addon/badge.svg?branch=master)](https://coveralls.io/r/seedstack/scheduling-addon?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.seedstack/seed-scheduling/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.seedstack/seed-scheduling)
+[![Build status](https://travis-ci.org/seedstack/scheduling-addon.svg?branch=master)](https://travis-ci.org/seedstack/scheduling-addon) [![Coverage Status](https://coveralls.io/repos/seedstack/scheduling-addon/badge.svg?branch=master)](https://coveralls.io/r/seedstack/scheduling-addon?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.seedstack.addons.scheduling/scheduling/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.seedstack.addons.scheduling/scheduling)
 
 Official scheduling integration for SeedStack.
 
