@@ -1,11 +1,20 @@
 ---
-title: "Overview"
-addon: "Scheduling"
+title: "Basics"
+name: "Scheduling"
 repo: "https://github.com/seedstack/scheduling-addon"
 author: "SeedStack"
 description: "Provides easy-to-use support for task scheduling through Quartz."
 min-version: "15.11+"
 backend: true
+weight: -1
+tags:
+    - "scheduling"
+    - "task"
+    - "quartz"
+    - "cron"
+    - "timer"
+zones:
+    - Addons
 menu:
     AddonScheduling:
         weight: 10
@@ -120,4 +129,52 @@ within the listener.
 **Handle Exceptions.** Every listener method should contain a try-catch block that handles all possible exceptions. If
 a listener throws an exception, it may cause other listeners not to be notified and/or prevent the execution of
 the job, etc.
+{{% /callout %}}
+
+# Exception handling
+
+When exception occurs during the task execution, you can choose to unschedule the Task or refire it immediately. You just
+have add an ExceptionPolicy to the Scheduled annotation.
+
+    @Scheduled(value = "0/2 * * * * ?", exceptionPolicy = UNSCHEDULE_ALL_TRIGGERS)
+
+ExceptionPolicy can take the following values:
+
+* `REFIRE_IMMEDIATELY`: Immediately re-execute the task. This option **SHOULD BE USED VERY CAREFULLY** as the `Task`
+will be fired indefinitely until successful or the application crashes.
+
+* `UNSCHEDULE_FIRING_TRIGGER`: Unschedule the `Trigger` firing the `Task`. This option is convenient when a `Task`
+fails due to a specific trigger.
+
+* `UNSCHEDULE_ALL_TRIGGERS`: Unschedule all triggers associated to the `Task`.
+
+* `NONE`: Do nothing. Default value.
+
+You can also choose to handle exception by yourself with a TaskListener. It will be possible to use the
+`UNSCHEDULE_ALL_TRIGGERS` option and then reschedule the Task
+
+```java
+public class MyTaskListener implements TaskListener<MyTask> {
+
+    @Inject
+    private ScheduledTaskBuilderFactory factory;
+
+    @Override
+    public void onException(SchedulingContext schedulingContext, Exception e) {
+        logger.info("Something gets wrong");
+        try {
+            // Repair then reschedule
+            ScheduledTaskBuilder scheduledTaskBuilder = factory.createScheduledTaskBuilder(TimedTask.class);
+            scheduledTaskBuilder.reschedule(sc.getTriggerName());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+}
+```
+
+{{% callout info %}}
+`Exception` handling in a `TaskListener` is called asynchronously in order to be sure to apply the `Task`'s
+exception policy. Be careful in your implementation as it is impossible to know whether the `Task`'s `exceptionPolicy`
+or `TaskListener`'s `onException()` method is called first.
 {{% /callout %}}
