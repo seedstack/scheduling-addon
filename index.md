@@ -37,6 +37,7 @@ Your task will be detected and scheduled according to the annotation content at 
         public void execute() throws Exception {
             return calculateSomething();
         }
+        
     }
 
 As shown in above snippet, the default "value" attribute of `@Scheduled` is used for cron expression. <br>
@@ -48,47 +49,46 @@ If any other attribute is required, the annotation becomes for instance :
 Refer to [Quartz Documentation](http://quartz-scheduler.org/generated/2.2.1/html/qs-all/#page/Quartz_Scheduler_Documentation_Set%2Fco-trg_crontriggers.html%23) for cron expression details.
 
 # Programmatic API
-Inject a `ScheduledTaskBuilderFactory` and programmatically define a scheduled task (not necessarily at application
-startup) with following DSL:
+Inject the `ScheduledTasks` interface and programmatically define a scheduled task (not necessarily at application
+startup) with the following DSL:
 
 ## Cron expression
 
     @Inject
-    private ScheduledTaskBuilderFactory factory;
-    ...
-    ScheduledTaskBuilder scheduledTaskBuilder = factory
-													.createScheduledTaskBuilder(MyTask.class)
-													.withCronExpression("0/2 * * * * ?");
-	scheduledTaskBuilder.schedule();	
+    private ScheduledTasks scheduledTasks;
     
-Note: Above cron expression implicitly defines a `Trigger`.
+    ...
+    
+    scheduledTasks.scheduledTask(MyTask.class)
+        .withTaskName("usefulTask")
+	.withCronExpression("0/2 * * * * ?")
+	.schedule();
+
+{{% callout info %}}
+The above cron expression implicitly defines a `Trigger` that will fire accordingly.
+{{% /callout %}}
 
 ## With a Trigger
 
-When a cron expression can not define the expected triggering conditions, a (Quartz) `Trigger` can be defined.
-
-For example:
+When a cron expression is not enough to define the expected triggering conditions, a Quartz `Trigger` can be defined:
 
     @Inject
-    private ScheduledTaskBuilderFactory factory;
+    private ScheduledTasks scheduledTasks;
+    
     ...
     
-    Trigger trigger = TriggerBuilder
-		.newTrigger()
-		.withIdentity(TriggerKey.triggerKey("myTrigger", "myTriggerGroup"))
-		.withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                .withIntervalInSeconds(1)
-                .repeatForever())
-		.startAt(DateBuilder.futureDate(2,DateBuilder.IntervalUnit.SECOND))
-		.build();
+    Trigger trigger = TriggerBuilder.newTrigger()
+	.withIdentity(TriggerKey.triggerKey("myTrigger", "myTriggerGroup"))
+	.withSchedule(SimpleScheduleBuilder.simpleSchedule()              
+		.withIntervalInSeconds(1)
+               	.repeatForever())
+	.startAt(DateBuilder.futureDate(2,DateBuilder.IntervalUnit.SECOND))
+	.build();
  	
- 	ScheduledTaskBuilder scheduledTaskBuilder = factory
-            .createScheduledTaskBuilder(MyTask.class)
+    scheduledTasks.scheduledTask(MyTask.class)
             .withTrigger(trigger)
-            .withPriority(10);
-    scheduledTaskBuilder.schedule();
-
-
+            .withPriority(10)
+            .schedule();
 
 # Listeners
 Create a `Class` implementing `TaskListener` in order to listen to the `Task` execution. The `Task` is bound to the
@@ -170,6 +170,7 @@ public class MyTaskListener implements TaskListener<MyTask> {
             logger.error(e.getMessage(), e);
         }
     }
+    
 }
 ```
 
