@@ -37,7 +37,6 @@ Your task will be detected and scheduled according to the annotation content at 
         public void execute() throws Exception {
             return calculateSomething();
         }
-        
     }
 
 As shown in above snippet, the default "value" attribute of `@Scheduled` is used for cron expression. <br>
@@ -61,8 +60,8 @@ startup) with the following DSL:
     
     scheduledTasks.scheduledTask(MyTask.class)
         .withTaskName("usefulTask")
-	.withCronExpression("0/2 * * * * ?")
-	.schedule();
+	    .withCronExpression("0/2 * * * * ?")
+	    .schedule();
 
 {{% callout info %}}
 The above cron expression implicitly defines a `Trigger` that will fire accordingly.
@@ -78,12 +77,12 @@ When a cron expression is not enough to define the expected triggering condition
     ...
     
     Trigger trigger = TriggerBuilder.newTrigger()
-	.withIdentity(TriggerKey.triggerKey("myTrigger", "myTriggerGroup"))
-	.withSchedule(SimpleScheduleBuilder.simpleSchedule()              
-		.withIntervalInSeconds(1)
-               	.repeatForever())
-	.startAt(DateBuilder.futureDate(2,DateBuilder.IntervalUnit.SECOND))
-	.build();
+	    .withIdentity(TriggerKey.triggerKey("myTrigger", "myTriggerGroup"))
+	    .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+		    .withIntervalInSeconds(1)
+            .repeatForever())
+	    .startAt(DateBuilder.futureDate(2,DateBuilder.IntervalUnit.SECOND))
+	    .build();
  	
     scheduledTasks.scheduledTask(MyTask.class)
             .withTrigger(trigger)
@@ -98,6 +97,9 @@ Create a `Class` implementing `TaskListener` in order to listen to the `Task` ex
         @Logging
         private Logger logger;
 
+        @Inject
+        private ScheduledTasks scheduledTasks;
+
         @Override
         public void before(SchedulingContext schedulingContext) {
             logger.info("Before MyTask");
@@ -110,12 +112,10 @@ Create a `Class` implementing `TaskListener` in order to listen to the `Task` ex
 
         @Override
         public void onException(SchedulingContext schedulingContext, Exception e) {
-            logger.info("Something gets wrong", e);
-			
-			ScheduledTaskBuilder scheduledTaskBuilder = factory
-                    .createScheduledTaskBuilder(MyTask.class);
-												
-			scheduledTaskBuilder.unschedule(sc.getTriggerName());
+            logger.info("Something has gone wrong, unscheduling", e);
+			scheduledTasks
+			    .scheduledTask(MyTask.class)
+			    .unschedule(schedulingContext.getTriggerName());
         }
     }
 
@@ -157,20 +157,22 @@ You can also choose to handle exception by yourself with a TaskListener. It will
 public class MyTaskListener implements TaskListener<MyTask> {
 
     @Inject
-    private ScheduledTaskBuilderFactory factory;
+    private ScheduledTasks scheduledTasks;
 
     @Override
     public void onException(SchedulingContext schedulingContext, Exception e) {
-        logger.info("Something gets wrong");
+        logger.info("Something has gone wrong");
         try {
-            // Repair then reschedule
-            ScheduledTaskBuilder scheduledTaskBuilder = factory.createScheduledTaskBuilder(TimedTask.class);
-            scheduledTaskBuilder.reschedule(sc.getTriggerName());
+            // Fix the problem
+
+            // Reschedule
+            scheduledTasks
+                .scheduledTask(TimedTask.class)
+                .withTriggerName(schedulingContext.getTriggerName());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
-    
 }
 ```
 
