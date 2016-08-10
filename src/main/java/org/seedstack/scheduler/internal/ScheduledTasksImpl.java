@@ -11,6 +11,7 @@ import org.seedstack.scheduler.ScheduledTaskBuilder;
 import org.seedstack.scheduler.ScheduledTasks;
 import org.seedstack.scheduler.Task;
 import org.quartz.Scheduler;
+import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 
@@ -23,8 +24,11 @@ class ScheduledTasksImpl implements ScheduledTasks {
     @Inject
     private Scheduler scheduler;
 
+    @Inject
+    private Application application;
+
     @Override
     public ScheduledTaskBuilder scheduledTask(Class<? extends Task> taskClass) {
-        return new ScheduledTaskBuilderImpl(taskClass, scheduler);
+        return new ScheduledTaskBuilderImpl(taskClass, scheduler, application);
     }
 }

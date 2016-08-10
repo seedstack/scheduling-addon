@@ -9,6 +9,7 @@ package org.seedstack.scheduler.internal;
 
 import org.seedstack.scheduler.ScheduledTaskBuilder;
 import org.seedstack.scheduler.Task;
+import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.seedstack.scheduler.Scheduled;
 import org.apache.commons.lang.StringUtils;
@@ -111,9 +112,11 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
 
     private String jobName;
 
+    private Application application;
+
     private Class<? extends Task> taskClass;
 
-    ScheduledTaskBuilderImpl(final Class<? extends Task> taskClass, Scheduler scheduler) {
+    ScheduledTaskBuilderImpl(final Class<? extends Task> taskClass, Scheduler scheduler, Application application) {
         this.jobClass = TaskDelegateJob.class;
         this.scheduler = scheduler;
         this.taskClass = taskClass;
@@ -129,9 +132,9 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
             // if present, the name associated to a trigger or a job is retrieved
             // else, it is generated but can still be provided
             // with DSL withTriggerName() / withTaskName() methods
-            this.cronExpression = annotation.value();
-            this.jobName = DEFAULT.equals(annotation.taskName()) ? UUID.randomUUID().toString() : annotation.taskName();
-            this.triggerName = DEFAULT.equals(annotation.triggerName()) ? UUID.randomUUID().toString() : annotation.triggerName();
+            this.cronExpression = application.substituteWithConfiguration(annotation.value());
+            this.jobName = DEFAULT.equals(annotation.taskName()) ? UUID.randomUUID().toString() : application.substituteWithConfiguration(annotation.taskName());
+            this.triggerName = DEFAULT.equals(annotation.triggerName()) ? UUID.randomUUID().toString() : application.substituteWithConfiguration(annotation.triggerName());
             this.timeZone = !DEFAULT.equals(annotation.timeZoneId()) ? TimeZone.getTimeZone(annotation.timeZoneId()) : getDefault();
             this.requestRecovery = annotation.requestRecovery();
             this.priority = annotation.priority();
