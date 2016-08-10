@@ -1,3 +1,7 @@
+# Version 2.2.0 (2016-08-10)
+
+* [new] Add the ability to substitue `@Scheduling` attributes `value`, `taskName` and `triggerName` with configuration values via `${}` placeholder.
+
 # Version 2.1.1 (2016-04-26)
 
 * [chg] Update for SeedStack 16.4.
