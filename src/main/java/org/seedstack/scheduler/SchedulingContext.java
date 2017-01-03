@@ -12,8 +12,6 @@ import java.util.Date;
 
 /**
  * Provides detailed scheduling information for a task.
- *
- * @author david.scherrer@ext.mpsa.com
  */
 public interface SchedulingContext {
 

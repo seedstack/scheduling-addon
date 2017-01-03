@@ -7,24 +7,17 @@
  */
 package org.seedstack.scheduler.internal;
 
-import org.seedstack.seed.ErrorCode;
 
-/**
- * Error code for the scheduler support.
- *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 09/01/14
- */
+import org.seedstack.shed.exception.ErrorCode;
+
 enum SchedulerErrorCode implements ErrorCode {
-
-    SCHEDULER_ERROR,
-    UNRECOGNIZED_TRIGGER,
-    MISSING_CRON_EXPRESSION,
-    IMPOSSIBLE_TO_USE_CRON_AND_TRIGGER,
-    SCHEDULER_FAILED_TO_SHUTDOWN,
-    SCHEDULER_FAILED_TO_START,
+    EXCEPTION_IN_LISTENER,
     FAILED_TO_INSTANTIATE_TASK,
-    JOB_EXECUTION_EXCEPTION,
+    IMPOSSIBLE_TO_USE_CRON_AND_TRIGGER,
+    MISSING_CRON_EXPRESSION,
     MISSING_TYPE_PARAMETER,
-    EXCEPTION_IN_LISTENER, TRIGGER_AND_JOB_NAME_SHOULD_BE_UNIQUE
+    SCHEDULER_ERROR,
+    SCHEDULER_FAILED_TO_START,
+    TRIGGER_AND_JOB_NAME_SHOULD_BE_UNIQUE,
+    UNRECOGNIZED_TRIGGER
 }

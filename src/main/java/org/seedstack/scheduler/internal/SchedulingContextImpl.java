@@ -12,12 +12,6 @@ import org.quartz.JobExecutionContext;
 
 import java.util.Date;
 
-
-/**
- * @author david.scherrer@ext.mpsa.com
- *         Date: 07/03/14
- */
-
 class SchedulingContextImpl implements SchedulingContext {
 
     // Task

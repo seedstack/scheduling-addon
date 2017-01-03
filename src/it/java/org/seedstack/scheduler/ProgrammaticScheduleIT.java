@@ -7,11 +7,11 @@
  */
 package org.seedstack.scheduler;
 
-import org.seedstack.seed.it.SeedITRunner;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.Trigger;
+import org.seedstack.seed.it.SeedITRunner;
 
 import javax.inject.Inject;
 import java.util.concurrent.CountDownLatch;
@@ -22,10 +22,6 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 09/01/14
- */
 @RunWith(SeedITRunner.class)
 public class ProgrammaticScheduleIT {
     static CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -37,7 +33,7 @@ public class ProgrammaticScheduleIT {
     @Test
     public void programmatically_timed_task() throws Exception {
         Trigger trigger = newTrigger()
-                .withIdentity(triggerKey("Trigger3", "TriggerGroup"))
+                .withIdentity(triggerKey("Trigger3", TimedTask3.class.getName()))
                 .withSchedule(simpleSchedule()
                         .withIntervalInSeconds(1))
                 .build();
@@ -46,6 +42,8 @@ public class ProgrammaticScheduleIT {
 
         if (!countDownLatch.await(10, TimeUnit.SECONDS))
             fail("timeout during programatically timed task wait");
+
+        scheduledTasks.scheduledTask(TimedTask3.class).unschedule("Trigger3");
 
         Assertions.assertThat(invocationCount3).isEqualTo(1);
     }

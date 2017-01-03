@@ -7,6 +7,8 @@
  */
 package org.seedstack.scheduler;
 
+import org.quartz.TriggerKey;
+
 import java.util.TimeZone;
 
 /**
@@ -125,7 +127,6 @@ public interface ScheduledTaskBuilder {
      */
 	void reschedule(String triggerName);
 
-
     /**
      * Unschedule the {@code Task} with provided trigger identification.<br>
      * triggerGroup is the Class of the {@code Task} implementation
@@ -133,5 +134,13 @@ public interface ScheduledTaskBuilder {
      * @param triggerName the name of the trigger to unschedule.
      */
 	void unschedule(String triggerName);
+
+    /**
+     * Unschedule the {@code Task} with provided trigger identification.<br>
+     * triggerGroup is the Class of the {@code Task} implementation
+     *
+     * @param triggerKey the key of the trigger to unschedule.
+     */
+	void unschedule(TriggerKey triggerKey);
 
 }

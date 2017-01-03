@@ -7,11 +7,6 @@
  */
 package org.seedstack.scheduler.internal;
 
-import org.seedstack.scheduler.ScheduledTaskBuilder;
-import org.seedstack.scheduler.Task;
-import org.seedstack.seed.Application;
-import org.seedstack.seed.SeedException;
-import org.seedstack.scheduler.Scheduled;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobKey;
@@ -20,6 +15,11 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
+import org.seedstack.scheduler.Scheduled;
+import org.seedstack.scheduler.ScheduledTaskBuilder;
+import org.seedstack.scheduler.Task;
+import org.seedstack.seed.Application;
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +34,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 /**
  * DSL to produce {@code Job} and add to a {@code Scheduler},
  * and associate the related {@code Trigger} with it.
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledTaskBuilderImpl.class);
@@ -111,8 +109,6 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     private String jobGroup;
 
     private String jobName;
-
-    private Application application;
 
     private Class<? extends Task> taskClass;
 
@@ -262,6 +258,17 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
         try {
             if (scheduler.checkExists(tk)) {
                 scheduler.unscheduleJob(tk);
+            }
+        } catch (SchedulerException e) {
+            throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);
+        }
+    }
+
+    @Override
+    public void unschedule(TriggerKey triggerKey) {
+        try {
+            if (scheduler.checkExists(triggerKey)) {
+                scheduler.unscheduleJob(triggerKey);
             }
         } catch (SchedulerException e) {
             throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);

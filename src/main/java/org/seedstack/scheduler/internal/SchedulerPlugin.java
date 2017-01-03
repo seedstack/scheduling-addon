@@ -9,21 +9,23 @@ package org.seedstack.scheduler.internal;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.seedstack.scheduler.Scheduled;
-import org.seedstack.scheduler.ScheduledTasks;
-import org.seedstack.scheduler.Task;
-import org.seedstack.scheduler.TaskListener;
-import org.seedstack.seed.SeedException;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import io.nuun.kernel.core.AbstractPlugin;
 import org.apache.commons.lang.StringUtils;
 import org.kametic.specifications.Specification;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
+import org.seedstack.scheduler.Scheduled;
+import org.seedstack.scheduler.ScheduledTasks;
+import org.seedstack.scheduler.Task;
+import org.seedstack.scheduler.TaskListener;
+import org.seedstack.seed.SeedException;
+import org.seedstack.seed.core.internal.AbstractSeedPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.lang.reflect.ParameterizedType;
@@ -32,10 +34,10 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * @author pierre.thirouin@ext.mpsa.com
+ * Plugin for Quartz scheduler integration.
  */
-public class SchedulerPlugin extends AbstractPlugin {
-
+public class SchedulerPlugin extends AbstractSeedPlugin {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerPlugin.class);
     private Specification<Class<?>> specificationForJobs;
     private Specification<Class<?>> specificationForJobListeners;
     private Collection<Class<?>> jobClasses;
@@ -43,11 +45,11 @@ public class SchedulerPlugin extends AbstractPlugin {
     private Scheduler scheduler;
 
     @Inject
-    static DelegateJobListener delegateJobListener;
+    private static DelegateJobListener delegateJobListener;
     @Inject
-    static GuiceTaskFactory guiceTaskFactory;
+    private static GuiceTaskFactory guiceTaskFactory;
     @Inject
-    static ScheduledTasks scheduledTasks;
+    private static ScheduledTasks scheduledTasks;
 
     @Override
     public String name() {
@@ -63,7 +65,7 @@ public class SchedulerPlugin extends AbstractPlugin {
 
 
     @Override
-    public InitState init(InitContext initContext) {
+    public InitState initialize(InitContext initContext) {
         Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
 
         // Associates - scan for nativeUnitModule
@@ -125,6 +127,11 @@ public class SchedulerPlugin extends AbstractPlugin {
     }
 
     @Override
+    public Object nativeUnitModule() {
+        return new SchedulerModule(jobClasses, scheduler, jobListenerMap);
+    }
+
+    @Override
     public void start(Context context) {
         super.start(context);
 
@@ -133,8 +140,8 @@ public class SchedulerPlugin extends AbstractPlugin {
             scheduler.setJobFactory(guiceTaskFactory);
             scheduler.getListenerManager().addJobListener(delegateJobListener);
 
-            // Schedule declarative jobs (@Scheduled)
-            scheduleJobs();
+            // Schedule declarative tasks (@Scheduled)
+            scheduleAnnotatedTasks();
 
             // Start scheduler
             scheduler.start();
@@ -143,12 +150,7 @@ public class SchedulerPlugin extends AbstractPlugin {
         }
     }
 
-    /**
-     * Schedules {@code Jobs} which have a Scheduled annotation with cron expression.
-     *
-     * @throws SeedException when the {@code Job} can't be schedule.
-     */
-    private void scheduleJobs() {
+    private void scheduleAnnotatedTasks() {
         try {
             for (Class<?> candidateClass : jobClasses) {
                 if (Task.class.isAssignableFrom(candidateClass)) {
@@ -172,13 +174,8 @@ public class SchedulerPlugin extends AbstractPlugin {
                 this.scheduler.shutdown();
             }
         } catch (SchedulerException e) {
-            throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_FAILED_TO_SHUTDOWN);
+            LOGGER.warn("Quartz scheduler failed to shutdown properly", e);
         }
         super.stop();
-    }
-
-    @Override
-    public Object nativeUnitModule() {
-        return new SchedulerModule(jobClasses, scheduler, jobListenerMap);
     }
 }

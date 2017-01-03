@@ -7,7 +7,5 @@
  */
 /**
  * Contains classes for scheduling tasks.
- *
- * @author Pierre Thirouin
  */
 package org.seedstack.scheduler;

@@ -24,9 +24,6 @@ package org.seedstack.scheduler;
  * ...
  * factory.createSchedulerBuilder(MyTask.class).withCronExpression("0/2 * * * * ?").schedule();
  * </pre>
- *
- * @author pierre.thirouin@ext.mpsa.com
- * @author david.scherrer@ext.mpsa.com
  */
 public interface Task {
     /**

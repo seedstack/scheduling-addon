@@ -23,8 +23,6 @@ import java.lang.annotation.Target;
  *     ...
  * }
  * </pre>
- *
- * @author pierre.thirouin@ext.mpsa.com
  */
 @Inherited
 @Documented

@@ -12,10 +12,7 @@ import org.slf4j.Logger;
 
 import static org.seedstack.scheduler.ExceptionPolicy.UNSCHEDULE_ALL_TRIGGERS;
 
-/**
- * @author tuan.docao@ext.mpsa.com
- */
-@Scheduled(value = "${org.seedstack.addons.scheduling.cron.expression}", taskName = "${org.seedstack.addons.scheduling.task.name}", triggerName = "${org.seedstack.addons.scheduling.trigger.name}", exceptionPolicy = UNSCHEDULE_ALL_TRIGGERS)
+@Scheduled(value = "${test.scheduling.cronExpression}", taskName = "${test.scheduling.taskName}", triggerName = "${test.scheduling.triggerName}", exceptionPolicy = UNSCHEDULE_ALL_TRIGGERS)
 public class TimedTask4 implements Task {
 
     @Logging

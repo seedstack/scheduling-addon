@@ -7,20 +7,15 @@
  */
 package org.seedstack.scheduler.internal;
 
+import org.quartz.Scheduler;
 import org.seedstack.scheduler.ScheduledTaskBuilder;
 import org.seedstack.scheduler.ScheduledTasks;
 import org.seedstack.scheduler.Task;
-import org.quartz.Scheduler;
 import org.seedstack.seed.Application;
 
 import javax.inject.Inject;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 14/01/14
- */
 class ScheduledTasksImpl implements ScheduledTasks {
-
     @Inject
     private Scheduler scheduler;
 

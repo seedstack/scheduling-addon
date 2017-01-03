@@ -11,8 +11,6 @@ package org.seedstack.scheduler;
  * This class provides methods to listen an executed {@link Task}.
  *
  * @param <T> the {@code Task} to listen to (<b>MANDATORY</b>)
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 10/01/14
  */
 public interface TaskListener<T extends Task> {
 

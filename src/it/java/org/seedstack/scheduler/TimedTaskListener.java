@@ -17,10 +17,6 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 13/01/14
- */
 public class TimedTaskListener implements Serializable, TaskListener<TimedTask1> {
     @Logging
     private Logger logger;

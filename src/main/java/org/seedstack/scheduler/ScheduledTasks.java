@@ -18,8 +18,6 @@ package org.seedstack.scheduler;
  * <p>
  * This class should be injected.
  *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 10/01/14
  * @see ScheduledTaskBuilder
  */
 public interface ScheduledTasks {

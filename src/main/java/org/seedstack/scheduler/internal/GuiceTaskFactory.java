@@ -24,9 +24,6 @@ import javax.inject.Inject;
  * This factory instantiates a {@link Job} wrapping a {@link Task}.
  * The task will be initialised with its listeners.
  * A new Job will be created each time the associated trigger will fire.
- *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 08/01/14
  */
 class GuiceTaskFactory implements JobFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiceTaskFactory.class);
@@ -35,6 +32,7 @@ class GuiceTaskFactory implements JobFactory {
     private Injector injector;
 
     @Override
+    @SuppressWarnings("unchecked")
     public Job newJob(TriggerFiredBundle bundle, Scheduler scheduler) throws SchedulerException {
         // create new Job
         Class<? extends Task> taskClass;
@@ -54,7 +52,8 @@ class GuiceTaskFactory implements JobFactory {
             // Add the task to execute
             job = new TaskDelegateJob(injector.getInstance(taskClass));
         } catch (Exception e) {
-            throw SeedException.wrap(e, SchedulerErrorCode.FAILED_TO_INSTANTIATE_TASK);
+            throw SeedException.wrap(e, SchedulerErrorCode.FAILED_TO_INSTANTIATE_TASK)
+                    .put("taskClass", taskClass);
         }
         return job;
     }

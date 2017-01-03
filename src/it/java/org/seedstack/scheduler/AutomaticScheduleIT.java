@@ -18,10 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.fail;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 09/01/14
- */
 @RunWith(SeedITRunner.class)
 public class AutomaticScheduleIT {
     static CountDownLatch countDownLatch = new CountDownLatch(3);

@@ -10,20 +10,15 @@ package org.seedstack.scheduler.internal;
 import com.google.common.collect.Multimap;
 import com.google.inject.PrivateModule;
 import com.google.inject.multibindings.MapBinder;
+import org.quartz.Scheduler;
 import org.seedstack.scheduler.ScheduledTasks;
 import org.seedstack.scheduler.Task;
 import org.seedstack.scheduler.TaskListener;
-import org.quartz.Scheduler;
 
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 08/01/14
- */
 class SchedulerModule extends PrivateModule {
-
     private final Collection<Class<?>> taskClasses;
     private final Multimap<Class<? extends Task>, Class<? extends TaskListener>> taskListenerMap;
     private final Scheduler scheduler;

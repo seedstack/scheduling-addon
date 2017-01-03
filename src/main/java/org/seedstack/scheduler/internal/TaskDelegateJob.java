@@ -7,19 +7,16 @@
  */
 package org.seedstack.scheduler.internal;
 
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.seedstack.scheduler.ExceptionPolicy;
 import org.seedstack.scheduler.Scheduled;
 import org.seedstack.scheduler.SchedulingContext;
 import org.seedstack.scheduler.Task;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 /**
  * TaskDelegateJob is Quartz job which execute the call method of a Task.
- *
- * @author pierre.thirouin@ext.mpsa.com
- *         Date: 08/01/14
  */
 class TaskDelegateJob implements Job {
     private final Task task;
