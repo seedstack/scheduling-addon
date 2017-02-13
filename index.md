@@ -1,12 +1,8 @@
 ---
-title: "Basics"
-name: "Scheduling"
+title: "Scheduling"
 repo: "https://github.com/seedstack/scheduling-addon"
-date: 2015-11-15
 author: Pierre THIROUIN
 description: "Provides easy-to-use support for task scheduling through Quartz."
-backend: true
-weight: -1
 tags:
     - "scheduling"
     - "task"
