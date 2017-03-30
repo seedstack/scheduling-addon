@@ -3,12 +3,6 @@ title: "Scheduling"
 repo: "https://github.com/seedstack/scheduling-addon"
 author: Pierre THIROUIN
 description: "Provides easy-to-use support for task scheduling through Quartz."
-tags:
-    - "scheduling"
-    - "task"
-    - "quartz"
-    - "cron"
-    - "timer"
 zones:
     - Addons
 menu:
