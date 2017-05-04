@@ -10,7 +10,9 @@ menu:
         weight: 10
 ---
 
-Scheduling add-on provides a simple API to schedule task in Seed. 
+Scheduling add-on provides a simple API to schedule task in Seed.<!--more--> 
+
+# Dependency
 
 {{< dependency g="org.seedstack.addons.scheduling" a="scheduling" >}}
 
