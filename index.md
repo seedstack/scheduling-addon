@@ -1,22 +1,21 @@
 ---
 title: "Scheduling"
+addon: "Scheduling"
 repo: "https://github.com/seedstack/scheduling-addon"
 author: Pierre THIROUIN
 description: "Provides easy-to-use support for task scheduling through Quartz."
 zones:
     - Addons
-menu:
-    AddonScheduling:
-        weight: 10
+noMenu: true    
 ---
 
 Scheduling add-on provides a simple API to schedule task in Seed.<!--more--> 
 
-# Dependency
+## Dependency
 
 {{< dependency g="org.seedstack.addons.scheduling" a="scheduling" >}}
 
-# Declarative API
+## Declarative API
 
 Create a `Class` implementing {{< java "org.seedstack.scheduler.Task" >}} and add a
 {{< java "org.seedstack.scheduler.Scheduled" "@" >}} annotation with a cron expression.<br>
@@ -39,11 +38,11 @@ If any other attribute is required, the annotation becomes for instance :
 `exceptionPolicy` defines the behaviour on `Task`'s exception. Refer to `@Scheduled` JavaDoc for all its attributes.
 Refer to [Quartz Documentation](http://quartz-scheduler.org/generated/2.2.1/html/qs-all/#page/Quartz_Scheduler_Documentation_Set%2Fco-trg_crontriggers.html%23) for cron expression details.
 
-# Programmatic API
+## Programmatic API
 Inject the `ScheduledTasks` interface and programmatically define a scheduled task (not necessarily at application
 startup) with the following DSL:
 
-## Cron expression
+### Cron expression
 
     @Inject
     private ScheduledTasks scheduledTasks;
@@ -59,7 +58,7 @@ startup) with the following DSL:
 The above cron expression implicitly defines a `Trigger` that will fire accordingly.
 {{% /callout %}}
 
-## With a Trigger
+### With a Trigger
 
 When a cron expression is not enough to define the expected triggering conditions, a Quartz `Trigger` can be defined:
 
@@ -81,7 +80,7 @@ When a cron expression is not enough to define the expected triggering condition
             .withPriority(10)
             .schedule();
 
-# Listeners
+## Listeners
 Create a `Class` implementing `TaskListener` in order to listen to the `Task` execution. The `Task` is bound to the
 {{< java "org.seedstack.scheduler.TaskListener" >}} by declaring the `Task` as the `Type` parameter:
 
@@ -123,7 +122,7 @@ a listener throws an exception, it may cause other listeners not to be notified 
 the job, etc.
 {{% /callout %}}
 
-# Exception handling
+## Exception handling
 
 When exception occurs during the task execution, you can choose to unschedule the Task or refire it immediately. You just
 have add an ExceptionPolicy to the Scheduled annotation.
