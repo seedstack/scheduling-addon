@@ -1,14 +1,15 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler;
 
 import java.util.Date;
-
+import java.util.Map;
 
 /**
  * Provides detailed scheduling information for a task.
@@ -28,7 +29,8 @@ public interface SchedulingContext {
     String getTaskName();
 
     /**
-     * RequestRecovery notify the Scheduler whether or not the Task should be re-executed if a recovery or fail-over situation is encountered.
+     * RequestRecovery notify the Scheduler whether or not the Task should be re-executed if a recovery or fail-over
+     * situation is encountered.
      *
      * @return true if recovery should be attempted, false otherwise
      */
@@ -127,4 +129,21 @@ public interface SchedulingContext {
      * @return the planned start date
      */
     Date getTriggerStartDate();
+
+    /**
+     * The task data map.
+     *
+     * @return the data map.
+     */
+    Map<String, ?> getDataMap();
+
+    /**
+     * Allow to access to unwrap the context to an implementation-specific class.
+     *
+     * @param toClass the implementation-specific class to access to.
+     * @param <T>     the implementation-specific type.
+     * @return the instance implementing the requested type.
+     * @throws org.seedstack.seed.SeedException if the class cannot be unwrapped.
+     */
+    <T> T unwrap(Class<T> toClass);
 }

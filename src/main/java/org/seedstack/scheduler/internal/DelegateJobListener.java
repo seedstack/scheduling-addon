@@ -1,22 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler.internal;
 
-import org.seedstack.seed.SeedException;
-import org.seedstack.scheduler.TaskListener;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.JobListener;
-
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.JobListener;
+import org.seedstack.scheduler.TaskListener;
+import org.seedstack.seed.SeedException;
 
 class DelegateJobListener implements JobListener {
     @Inject
@@ -34,8 +34,10 @@ class DelegateJobListener implements JobListener {
             for (TaskListener jobTaskListener : jobTaskListeners) {
                 try {
                     jobTaskListener.before(new SchedulingContextImpl(context));
-                } catch(Exception e) {
-                    throw SeedException.wrap(e, SchedulerErrorCode.EXCEPTION_IN_LISTENER).put("method", "before").put("listenerClass", jobTaskListener.getClass());
+                } catch (Exception e) {
+                    throw SeedException.wrap(e, SchedulerErrorCode.EXCEPTION_IN_LISTENER)
+                            .put("method", "before")
+                            .put("listenerClass", jobTaskListener.getClass());
                 }
             }
         }
@@ -54,14 +56,18 @@ class DelegateJobListener implements JobListener {
                 if (jobException != null) {
                     try {
                         jobTaskListener.onException(new SchedulingContextImpl(context), jobException);
-                    } catch(Exception e) {
-                        throw SeedException.wrap(e, SchedulerErrorCode.EXCEPTION_IN_LISTENER).put("method", "onException").put("listenerClass", jobTaskListener.getClass());
+                    } catch (Exception e) {
+                        throw SeedException.wrap(e, SchedulerErrorCode.EXCEPTION_IN_LISTENER)
+                                .put("method", "onException")
+                                .put("listenerClass", jobTaskListener.getClass());
                     }
                 } else {
                     try {
                         jobTaskListener.after(new SchedulingContextImpl(context));
-                    } catch(Exception e) {
-                        throw SeedException.wrap(e, SchedulerErrorCode.EXCEPTION_IN_LISTENER).put("method", "after").put("listenerClass", jobTaskListener.getClass());
+                    } catch (Exception e) {
+                        throw SeedException.wrap(e, SchedulerErrorCode.EXCEPTION_IN_LISTENER)
+                                .put("method", "after")
+                                .put("listenerClass", jobTaskListener.getClass());
                     }
                 }
             }

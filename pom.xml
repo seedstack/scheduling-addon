@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+    Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
 
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,18 +15,18 @@
     <parent>
         <groupId>org.seedstack.poms</groupId>
         <artifactId>parent-internal</artifactId>
-        <version>3.0.0</version>
+        <version>3.2.1</version>
     </parent>
 
     <groupId>org.seedstack.addons.scheduling</groupId>
     <artifactId>scheduling</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
 
     <properties>
-        <seed.version>3.0.0</seed.version>
-        <quartz.version>2.2.2</quartz.version>
+        <seed.version>3.4.2</seed.version>
+        <quartz.version>2.3.0</quartz.version>
 
-        <compatibility.skip>true</compatibility.skip>
+        <compatibility.version>3.0.0</compatibility.version>
 
         <bintray.package>scheduling-addon</bintray.package>
     </properties>
@@ -42,6 +42,8 @@
                             <includedLicense>Apache 2</includedLicense>
                             <includedLicense>BSD</includedLicense>
                             <includedLicense>CDDL</includedLicense>
+                            <includedLicense>EPL 1.0</includedLicense>
+                            <includedLicense>LGPL 2.1</includedLicense>
                             <includedLicense>LGPL 3.0</includedLicense>
                             <includedLicense>MIT License</includedLicense>
                             <includedLicense>MPL 2.0</includedLicense>
@@ -59,10 +61,25 @@
                             <licenseMerge>Apache 2|Apache License Version 2.0</licenseMerge>
                             <licenseMerge>BSD|The New BSD License</licenseMerge>
                             <licenseMerge>CDDL|CDDL + GPLv2 with classpath exception</licenseMerge>
+                            <licenseMerge>EPL 1.0|Eclipse Public License, Version 1.0</licenseMerge>
+                            <licenseMerge>LGPL 2.1|GNU Lesser General Public License, Version 2.1</licenseMerge>
                             <licenseMerge>LGPL 3.0|GNU Lesser Public License</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|MPL 1.1</licenseMerge>
                             <licenseMerge>IGNORED_LICENSE|LGPL 2.1</licenseMerge>
                         </licenseMerges>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.siom79.japicmp</groupId>
+                    <artifactId>japicmp-maven-plugin</artifactId>
+                    <configuration>
+                        <parameter>
+                            <excludes>
+                                <exclude>*.internal.*</exclude>
+                                <!-- Quartz-dependent method has been removed -->
+                                <exclude>org.seedstack.scheduler.ScheduledTaskBuilder</exclude>
+                            </excludes>
+                        </parameter>
                     </configuration>
                 </plugin>
             </plugins>
@@ -79,7 +96,12 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
-            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

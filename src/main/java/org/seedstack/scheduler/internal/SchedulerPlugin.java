@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler.internal;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -13,6 +14,11 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
+import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.kametic.specifications.Specification;
 import org.quartz.Scheduler;
@@ -27,29 +33,22 @@ import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
-
 /**
  * Plugin for Quartz scheduler integration.
  */
 public class SchedulerPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerPlugin.class);
-    private Specification<Class<?>> specificationForJobs;
-    private Specification<Class<?>> specificationForJobListeners;
-    private Collection<Class<?>> jobClasses;
-    private Multimap<Class<? extends Task>, Class<? extends TaskListener>> jobListenerMap = ArrayListMultimap.create();
-    private Scheduler scheduler;
-
     @Inject
     private static DelegateJobListener delegateJobListener;
     @Inject
     private static GuiceTaskFactory guiceTaskFactory;
     @Inject
     private static ScheduledTasks scheduledTasks;
+    private Specification<Class<?>> specificationForJobs;
+    private Specification<Class<?>> specificationForJobListeners;
+    private Collection<Class<?>> jobClasses;
+    private Multimap<Class<? extends Task>, Class<? extends TaskListener>> jobListenerMap = ArrayListMultimap.create();
+    private Scheduler scheduler;
 
     @Override
     public String name() {
@@ -60,13 +59,15 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         specificationForJobs = classImplements(Task.class);
         specificationForJobListeners = classImplements(TaskListener.class);
-        return classpathScanRequestBuilder().specification(specificationForJobs).specification(specificationForJobListeners).build();
+        return classpathScanRequestBuilder().specification(specificationForJobs)
+                .specification(specificationForJobListeners)
+                .build();
     }
-
 
     @Override
     public InitState initialize(InitContext initContext) {
-        Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext.scannedTypesBySpecification();
+        Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext
+                .scannedTypesBySpecification();
 
         // Associates - scan for nativeUnitModule
         jobClasses = scannedTypesBySpecification.get(specificationForJobs);
@@ -79,7 +80,8 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
                 if (typeVariable != null && Task.class.isAssignableFrom((Class<?>) typeVariable)) {
                     // bind the Task to the listener
                     //noinspection unchecked
-                    jobListenerMap.put((Class<? extends Task>) typeVariable, (Class<? extends TaskListener>) listenerClass);
+                    jobListenerMap.put((Class<? extends Task>) typeVariable,
+                            (Class<? extends TaskListener>) listenerClass);
                 }
             }
         }
@@ -94,7 +96,6 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
 
         return InitState.INITIALIZED;
     }
-
 
     /**
      * Returns the type parameter of the TaskListener interface.

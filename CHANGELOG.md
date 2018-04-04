@@ -1,3 +1,10 @@
+# Version 3.1.0 (2018-04-28)
+
+* [new] Add method to specify task data. 
+* [new] Add method on `SchedulingContext` to access the underlying Quartz implementation context. 
+* [chg] Updated Quartz to 2.3.0 which is now pulled transitively (scope was `provided` before). 
+* [brk] Remove method to un-schedule task by its trigger key (was Quartz specific). 
+
 # Version 3.0.0 (2017-01-03)
 
 * [new] Add a method to un-schedule a task by its trigger key. 

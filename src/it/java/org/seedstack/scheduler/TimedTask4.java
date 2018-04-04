@@ -1,18 +1,20 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler;
+
+import static org.seedstack.scheduler.ExceptionPolicy.UNSCHEDULE_ALL_TRIGGERS;
 
 import org.seedstack.seed.Logging;
 import org.slf4j.Logger;
 
-import static org.seedstack.scheduler.ExceptionPolicy.UNSCHEDULE_ALL_TRIGGERS;
-
-@Scheduled(value = "${test.scheduling.cronExpression}", taskName = "${test.scheduling.taskName}", triggerName = "${test.scheduling.triggerName}", exceptionPolicy = UNSCHEDULE_ALL_TRIGGERS)
+@Scheduled(value = "${test.scheduling.cronExpression}", taskName = "${test.scheduling.taskName}", triggerName =
+        "${test.scheduling.triggerName}", exceptionPolicy = UNSCHEDULE_ALL_TRIGGERS)
 public class TimedTask4 implements Task {
 
     @Logging
@@ -25,6 +27,5 @@ public class TimedTask4 implements Task {
         AutomaticScheduleIT.actualTaskName = sc.getTaskName();
         AutomaticScheduleIT.actualTriggerName = sc.getTriggerName();
         AutomaticScheduleIT.countDownLatch.countDown();
-
     }
 }

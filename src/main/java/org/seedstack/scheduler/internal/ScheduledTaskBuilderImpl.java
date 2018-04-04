@@ -1,14 +1,25 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler.internal;
 
+import static java.util.TimeZone.getDefault;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
+
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Job;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
@@ -22,14 +33,6 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.TimeZone;
-import java.util.UUID;
-
-import static java.util.TimeZone.getDefault;
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * DSL to produce {@code Job} and add to a {@code Scheduler},
@@ -104,6 +107,11 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
      */
     private boolean updateExistingTrigger;
 
+    /**
+     * The data map passed to the task
+     */
+    private Map<String, ?> dataMap;
+
     private TriggerKey triggerKey;
 
     private String jobGroup;
@@ -129,9 +137,12 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
             // else, it is generated but can still be provided
             // with DSL withTriggerName() / withTaskName() methods
             this.cronExpression = application.substituteWithConfiguration(annotation.value());
-            this.jobName = DEFAULT.equals(annotation.taskName()) ? UUID.randomUUID().toString() : application.substituteWithConfiguration(annotation.taskName());
-            this.triggerName = DEFAULT.equals(annotation.triggerName()) ? UUID.randomUUID().toString() : application.substituteWithConfiguration(annotation.triggerName());
-            this.timeZone = !DEFAULT.equals(annotation.timeZoneId()) ? TimeZone.getTimeZone(annotation.timeZoneId()) : getDefault();
+            this.jobName = DEFAULT.equals(annotation.taskName()) ? UUID.randomUUID()
+                    .toString() : application.substituteWithConfiguration(annotation.taskName());
+            this.triggerName = DEFAULT.equals(annotation.triggerName()) ? UUID.randomUUID()
+                    .toString() : application.substituteWithConfiguration(annotation.triggerName());
+            this.timeZone = !DEFAULT.equals(annotation.timeZoneId()) ? TimeZone.getTimeZone(annotation.timeZoneId())
+                    : getDefault();
             this.requestRecovery = annotation.requestRecovery();
             this.priority = annotation.priority();
             this.storeDurably = annotation.storeDurably();
@@ -198,6 +209,12 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     }
 
     @Override
+    public ScheduledTaskBuilder withDataMap(Map<String, ?> dataMap) {
+        this.dataMap = dataMap;
+        return this;
+    }
+
+    @Override
     public ScheduledTaskBuilder updateExistingTrigger() {
         this.updateExistingTrigger = true;
         return this;
@@ -211,7 +228,8 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
             throw SeedException.createNew(SchedulerErrorCode.MISSING_CRON_EXPRESSION).put("class", jobClass.getName());
         }
         if (StringUtils.isNotBlank(cronExpression) && trigger != null) {
-            throw SeedException.createNew(SchedulerErrorCode.IMPOSSIBLE_TO_USE_CRON_AND_TRIGGER).put("class", jobClass.getName());
+            throw SeedException.createNew(SchedulerErrorCode.IMPOSSIBLE_TO_USE_CRON_AND_TRIGGER)
+                    .put("class", jobClass.getName());
         }
 
         try {
@@ -223,11 +241,16 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
         }
 
         try {
-            scheduler.scheduleJob(newJob(jobClass)
-                            .withIdentity(getJobKey())
-                            .requestRecovery(requestRecovery)
-                            .storeDurably(storeDurably).build(),
-                    getTrigger());
+            JobBuilder jobBuilder = newJob(jobClass)
+                    .withIdentity(getJobKey())
+                    .requestRecovery(requestRecovery)
+                    .storeDurably(storeDurably);
+
+            if (dataMap != null) {
+                jobBuilder.usingJobData(new JobDataMap(dataMap));
+            }
+
+            scheduler.scheduleJob(jobBuilder.build(), getTrigger());
 
             if (cronExpression != null) {
                 LOGGER.info("Scheduled {} task with cron {}", taskClass.getCanonicalName(), cronExpression);
@@ -258,17 +281,6 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
         try {
             if (scheduler.checkExists(tk)) {
                 scheduler.unscheduleJob(tk);
-            }
-        } catch (SchedulerException e) {
-            throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);
-        }
-    }
-
-    @Override
-    public void unschedule(TriggerKey triggerKey) {
-        try {
-            if (scheduler.checkExists(triggerKey)) {
-                scheduler.unscheduleJob(triggerKey);
             }
         } catch (SchedulerException e) {
             throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);

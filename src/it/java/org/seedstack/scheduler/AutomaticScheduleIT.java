@@ -1,25 +1,26 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler;
-
-import org.seedstack.seed.it.SeedITRunner;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.util.Date;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.fail;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.seedstack.seed.it.SeedITRunner;
+
 @RunWith(SeedITRunner.class)
 public class AutomaticScheduleIT {
+    private final static String expectedTaskName = "Task4";
+    private final static String expectedTriggerName = "Trigger4";
     static CountDownLatch countDownLatch = new CountDownLatch(3);
     static int invocationCount1 = 0;
     static int invocationCount2 = 0;
@@ -29,9 +30,6 @@ public class AutomaticScheduleIT {
     static boolean onExceptionCalled = false;
     static String actualTaskName;
     static String actualTriggerName;
-    private final static String expectedTaskName = "Task4";
-    private final static String expectedTriggerName = "Trigger4";
-
 
     @Test
     public void automatically_timed_task() throws Exception {

@@ -1,14 +1,14 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler;
 
-import org.quartz.TriggerKey;
-
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -68,18 +68,25 @@ public interface ScheduledTaskBuilder {
      */
     ScheduledTaskBuilder withTimeZone(TimeZone timeZone);
 
-
-
     /**
      * Sets the {@code Task}'s identity
+     *
      * @param taskName The {@code Task}'s name
      * @return This builder instance
      */
     ScheduledTaskBuilder withTaskName(String taskName);
-    
+
     /**
-     * Sets the Trigger's priority.<br>  
-     * 
+     * Sets the {@code Task}'s data map
+     *
+     * @param dataMap The {@code Task}'s data map
+     * @return This builder instance
+     */
+    ScheduledTaskBuilder withDataMap(Map<String, ?> dataMap);
+
+    /**
+     * Sets the Trigger's priority.<br>
+     *
      * When more than one Trigger have the same fire time, <br>
      * the scheduler will fire the one with the highest priority first.<br>
      *
@@ -125,7 +132,7 @@ public interface ScheduledTaskBuilder {
      *
      * @param triggerName the name of the trigger to reschedule.
      */
-	void reschedule(String triggerName);
+    void reschedule(String triggerName);
 
     /**
      * Unschedule the {@code Task} with provided trigger identification.<br>
@@ -133,14 +140,5 @@ public interface ScheduledTaskBuilder {
      *
      * @param triggerName the name of the trigger to unschedule.
      */
-	void unschedule(String triggerName);
-
-    /**
-     * Unschedule the {@code Task} with provided trigger identification.<br>
-     * triggerGroup is the Class of the {@code Task} implementation
-     *
-     * @param triggerKey the key of the trigger to unschedule.
-     */
-	void unschedule(TriggerKey triggerKey);
-
+    void unschedule(String triggerName);
 }

@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler;
 
 import java.lang.annotation.Documented;
@@ -75,7 +76,8 @@ public @interface Scheduled {
     String timeZoneId() default DEFAULT;
 
     /**
-     * @return the trigger's priority.  When more than one trigger have the same fire time, the scheduler will fire the one with the highest priority first.
+     * @return the trigger's priority.  When more than one trigger have the same fire time, the scheduler will fire
+     * the one with the highest priority first.
      */
     int priority() default 0;
 }

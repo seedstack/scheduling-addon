@@ -1,18 +1,22 @@
-/**
- * Copyright (c) 2013-2016, The SeedStack authors <http://seedstack.org>
+/*
+ * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.scheduler.internal;
 
-import org.seedstack.scheduler.SchedulingContext;
-import org.quartz.JobExecutionContext;
-
 import java.util.Date;
+import java.util.Map;
+import org.quartz.JobExecutionContext;
+import org.seedstack.scheduler.SchedulingContext;
+import org.seedstack.seed.SeedException;
 
 class SchedulingContextImpl implements SchedulingContext {
+
+    private final JobExecutionContext jobExecutionContext;
 
     // Task
 
@@ -20,7 +24,6 @@ class SchedulingContextImpl implements SchedulingContext {
      * The Task name, must be unique within the group.
      */
     private final String taskName;
-
 
     /**
      * Instructs the Scheduler whether or not the Task should
@@ -94,12 +97,17 @@ class SchedulingContextImpl implements SchedulingContext {
      */
     private final Date triggerStartDate;
 
+    /**
+     * The task data map.
+     */
+    private final Map<String, ?> dataMap;
 
     SchedulingContextImpl(JobExecutionContext context) {
-
+        jobExecutionContext = context;
         taskName = context.getJobDetail().getKey().getName();
         storeDurably = context.getJobDetail().isDurable();
         requestRecovery = context.getJobDetail().requestsRecovery();
+        dataMap = context.getJobDetail().getJobDataMap();
 
         scheduledFireDate = context.getScheduledFireTime();
         currentFireDate = context.getFireTime();
@@ -171,5 +179,19 @@ class SchedulingContextImpl implements SchedulingContext {
 
     public Date getTriggerStartDate() {
         return triggerStartDate;
+    }
+
+    @Override
+    public Map<String, ?> getDataMap() {
+        return dataMap;
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> toClass) {
+        if (toClass.isAssignableFrom(jobExecutionContext.getClass())) {
+            return toClass.cast(jobExecutionContext);
+        }
+        throw SeedException.createNew(SchedulerErrorCode.UNABLE_TO_UNWRAP)
+                .put("class", toClass);
     }
 }
