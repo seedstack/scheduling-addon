@@ -11,6 +11,8 @@ package org.seedstack.scheduler;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.quartz.Trigger;
+
 /**
  * DSL to produce and schedule a {@link Task}. To use the {@code ScheduledTaskBuilder},
  * inject a {@link ScheduledTasks} and create a new {@code ScheduledTaskBuilder}.
@@ -106,7 +108,7 @@ public interface ScheduledTaskBuilder {
      * @param trigger The {@code Trigger} to associate with the {@code Task}
      * @return This builder instance
      */
-    ScheduledTaskBuilder withTrigger(Object trigger);
+    ScheduledTaskBuilder withTrigger(Trigger trigger);
 
     /**
      * Requests an existing trigger (sharing the same key as the new trigger) for this task to
@@ -135,10 +137,38 @@ public interface ScheduledTaskBuilder {
     void reschedule(String triggerName);
 
     /**
+     * Reschedule the {@code Task} with a new trigger
+     * <p>
+     * The new trigger should be provided either using DSL<br>
+     * withTrigger() or throw @Scheduled CRON definition.<br>
+     * The DSL can precise attributes of the new trigger such as withTriggerName
+     * <p>
+     * Arguments provide the previous trigger identification to be replaced
+     *
+     * @param triggerName the name of the trigger to reschedule.
+     * @param triggerGroup the group of the trigger to reschedule.
+     */
+    void reschedule(String triggerName, String triggerGroup);
+    
+    /**
      * Unschedule the {@code Task} with provided trigger identification.<br>
      * triggerGroup is the Class of the {@code Task} implementation
      *
      * @param triggerName the name of the trigger to unschedule.
      */
     void unschedule(String triggerName);
+    
+    /**
+     * Unschedule the {@code Task} with provided trigger identification.<br>
+     *
+     * @param triggerName the name of the trigger to unschedule.
+     * @param triggerGroup the group of the trigger to unschedule.
+     */
+    void unschedule(String triggerName, String triggerGroup);
+
+    /**
+     * @param triggerName
+     * @param triggerGroup
+     */
+    
 }

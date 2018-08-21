@@ -35,8 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DSL to produce {@code Job} and add to a {@code Scheduler},
- * and associate the related {@code Trigger} with it.
+ * DSL to produce {@code Job} and add to a {@code Scheduler}, and associate the related {@code Trigger} with it.
  */
 class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledTaskBuilderImpl.class);
@@ -51,15 +50,13 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     private final Class<? extends Job> jobClass;
 
     /**
-     * Instructs the {@code Scheduler} whether or not the {@code Job} should
-     * be re-executed if a {@code recovery} or {@code fail-over} situation is
-     * encountered.
+     * Instructs the {@code Scheduler} whether or not the {@code Job} should be re-executed if a {@code recovery} or
+     * {@code fail-over} situation is encountered.
      */
     private boolean requestRecovery;
 
     /**
-     * Whether or not the {@code Job} should remain stored after it is
-     * orphaned (no {@code Trigger}s point to it).
+     * Whether or not the {@code Job} should remain stored after it is orphaned (no {@code Trigger}s point to it).
      */
     private boolean storeDurably;
 
@@ -79,15 +76,13 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     private String cronExpression;
 
     /**
-     * The time zone for which the {@code cronExpression}
-     * of this {@code CronTrigger} will be resolved.
+     * The time zone for which the {@code cronExpression} of this {@code CronTrigger} will be resolved.
      */
     private TimeZone timeZone = getDefault();
 
     /**
-     * The {@code Trigger}'s priority.  When more than one {@code Trigger} have the same
-     * fire time, the scheduler will fire the one with the highest priority
-     * first.
+     * The {@code Trigger}'s priority. When more than one {@code Trigger} have the same fire time, the scheduler will fire the one
+     * with the highest priority first.
      */
     private int priority;
 
@@ -102,8 +97,8 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     private Trigger trigger;
 
     /**
-     * Indicates whether the job's trigger should be updated if it is already existing when being
-     * scheduled (which is typically the case with a persistent {@link org.quartz.spi.JobStore}.
+     * Indicates whether the job's trigger should be updated if it is already existing when being scheduled (which is typically
+     * the case with a persistent {@link org.quartz.spi.JobStore}.
      */
     private boolean updateExistingTrigger;
 
@@ -111,8 +106,6 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
      * The data map passed to the task
      */
     private Map<String, ?> dataMap;
-
-    private TriggerKey triggerKey;
 
     private String jobGroup;
 
@@ -193,12 +186,8 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
-    public ScheduledTaskBuilder withTrigger(Object trigger) {
-        if (trigger instanceof Trigger) {
-            this.trigger = (Trigger) trigger;
-        } else {
-            throw SeedException.createNew(SchedulerErrorCode.UNRECOGNIZED_TRIGGER).put("class", trigger.getClass());
-        }
+    public ScheduledTaskBuilder withTrigger(Trigger trigger) {
+        this.trigger = trigger;
         return this;
     }
 
@@ -266,51 +255,80 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
 
     @Override
     public void reschedule(String triggerName) {
-        try {
-            if (scheduler.rescheduleJob(buildTriggerKey(triggerName), getTrigger()) == null) {
-                throw SeedException.createNew(SchedulerErrorCode.UNRECOGNIZED_TRIGGER);
-            }
-        } catch (SchedulerException e) {
-            throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);
-        }
+        this.reschedule(buildTriggerKey(triggerName));
+    }
+
+    @Override
+    public void reschedule(String triggerName, String triggerGroup) {
+        this.reschedule(TriggerKey.triggerKey(triggerName, triggerGroup));
     }
 
     @Override
     public void unschedule(String triggerName) {
-        TriggerKey tk = buildTriggerKey(triggerName);
-        try {
-            if (scheduler.checkExists(tk)) {
-                scheduler.unscheduleJob(tk);
-            }
-        } catch (SchedulerException e) {
-            throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);
-        }
+        this.unschedule(buildTriggerKey(triggerName));
+    }
+
+    @Override
+    public void unschedule(String triggerName, String triggerGroup) {
+        this.unschedule(TriggerKey.triggerKey(triggerName, triggerGroup));
+
     }
 
     Trigger getTrigger() {
-        return (trigger == null) ?
-                newTrigger()
-                        .withIdentity(getTriggerKey())
-                        .withSchedule(cronSchedule(cronExpression)
-                                .inTimeZone(timeZone))
-                        .withPriority(priority)
-                        .build()
+        return (trigger == null) ? newTrigger()
+                .withIdentity(getTriggerKey())
+                .withSchedule(cronSchedule(cronExpression)
+                        .inTimeZone(timeZone))
+                .withPriority(priority)
+                .build()
                 : trigger;
     }
 
     JobKey getJobKey() {
-        return (jobKey == null) ?
-                jobKey = JobKey.jobKey(jobName, jobGroup)
-                : jobKey;
+        if (jobKey == null) {
+            jobKey = JobKey.jobKey(jobName, jobGroup);
+        }
+        return jobKey;
     }
 
     TriggerKey getTriggerKey() {
-        return (triggerKey == null) ?
-                triggerKey = TriggerKey.triggerKey(triggerName, triggerGroup)
-                : triggerKey;
+        if (trigger == null) {
+            return TriggerKey.triggerKey(triggerName, triggerGroup);
+        }
+        // If trigger object is present, we use it instead of a generic TriggerKey
+        return trigger.getKey();
+
     }
 
     private TriggerKey buildTriggerKey(String name) {
         return new TriggerKey(name, taskClass.getName());
     }
+
+    private void reschedule(TriggerKey tk) {
+        try {
+            if (!scheduler.checkExists(tk)) {
+                throw SeedException.createNew(SchedulerErrorCode.UNRECOGNIZED_TRIGGER)
+                        .put("triggerName", tk.getName()).put("triggerGroup", tk.getGroup());
+            }
+            if (scheduler.rescheduleJob(tk, getTrigger()) == null) {
+                throw SeedException.createNew(SchedulerErrorCode.UNRECOGNIZED_TRIGGER)
+                        .put("triggerName", tk.getName()).put("triggerGroup", tk.getGroup());
+            }
+            LOGGER.info("Recheduled {} task with trigger {}", taskClass.getCanonicalName(), tk);
+        } catch (SchedulerException e) {
+            throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);
+        }
+    }
+
+    private void unschedule(TriggerKey tk) {
+        try {
+            if (scheduler.checkExists(tk)) {
+                scheduler.unscheduleJob(tk);
+                LOGGER.info("Unscheduled {} task with trigger {}", taskClass.getCanonicalName(), tk);
+            }
+        } catch (SchedulerException e) {
+            throw SeedException.wrap(e, SchedulerErrorCode.SCHEDULER_ERROR);
+        }
+    }
+
 }

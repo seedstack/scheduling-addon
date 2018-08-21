@@ -6,18 +6,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package org.seedstack.scheduler;
+package org.seedstack.scheduler.fixtures;
 
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
-import static org.quartz.TriggerBuilder.newTrigger;
-import static org.quartz.TriggerKey.triggerKey;
+import java.util.TimeZone;
 
-import java.io.Serializable;
 import javax.inject.Inject;
+
+import org.seedstack.scheduler.AutomaticScheduleIT;
+import org.seedstack.scheduler.ScheduledTasks;
+import org.seedstack.scheduler.SchedulingContext;
+import org.seedstack.scheduler.TaskListener;
 import org.seedstack.seed.Logging;
 import org.slf4j.Logger;
 
-public class TimedTaskListener implements Serializable, TaskListener<TimedTask1> {
+public class TimedTaskListener implements TaskListener<TimedCronExpressionTask> {
     @Logging
     private Logger logger;
 
@@ -27,24 +29,27 @@ public class TimedTaskListener implements Serializable, TaskListener<TimedTask1>
     @Override
     public void before(SchedulingContext sc) {
         logger.info("Before timed task of Task {} on trigger {}", sc.getTaskName(), sc.getTriggerName());
-        AutomaticScheduleIT.beforeCalled = true;
+        AutomaticScheduleIT.notifyBeforeTriggerInvocation();
     }
 
     @Override
     public void after(SchedulingContext sc) {
         logger.info("After timed task from Task {} on trigger {}", sc.getTaskName(), sc.getTriggerName());
-        AutomaticScheduleIT.afterCalled = true;
+        AutomaticScheduleIT.notifyAfterTriggerInvocation();
     }
 
     @Override
     public void onException(SchedulingContext sc, Exception e) {
-        AutomaticScheduleIT.onExceptionCalled = true;
+        AutomaticScheduleIT.notifyOnExcetionInvocation();
 
         logger.info("Rescheduling timed task 2 from task {} on trigger {}", sc.getTaskName(), sc.getTriggerName());
-        scheduledTasks.scheduledTask(TimedTask2.class).withTaskName("Task2")
-                .withTrigger(newTrigger()
-                        .withIdentity(triggerKey("Trigger2"))
-                        .withSchedule(simpleSchedule()
-                                .withIntervalInSeconds(1)).build()).schedule();
+        scheduledTasks.scheduledTask(ListenerFiredTask.class)
+                .withTaskName("Task2")
+                .withTriggerName("Trigger2")
+                .withCronExpression("* * * * * ?")
+                .withStoreDurably(false)
+                .withRequestRecovery(false)
+                .withTimeZone(TimeZone.getDefault())
+                .schedule();
     }
 }
