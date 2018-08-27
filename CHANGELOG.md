@@ -1,3 +1,8 @@
+# Version 3.1.1 (2018-08-22)??
+
+* [new] Adds the capability to reschedule/unschedule a task by its trigger key and group.
+* [brk] withTrigger now receives Trigger instead of Object 
+
 # Version 3.1.0 (2018-04-28)
 
 * [new] Add method to specify task data. 
