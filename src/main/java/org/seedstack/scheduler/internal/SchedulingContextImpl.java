@@ -1,11 +1,10 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package org.seedstack.scheduler.internal;
 
 import java.util.Date;
@@ -125,58 +124,72 @@ class SchedulingContextImpl implements SchedulingContext {
 
     }
 
+    @Override
     public String getTaskName() {
         return taskName;
     }
 
+    @Override
     public boolean isRequestRecovery() {
         return requestRecovery;
     }
 
+    @Override
     public boolean isStoreDurably() {
         return storeDurably;
     }
 
+    @Override
     public String getTriggerName() {
         return triggerName;
     }
 
+    @Override
     public int getTriggerPriority() {
         return triggerPriority;
     }
 
+    @Override
     public Date getCurrentFireDate() {
         return currentFireDate;
     }
 
+    @Override
     public Date getPreviousFireDate() {
         return previousFireDate;
     }
 
+    @Override
     public Date getNextFireDate() {
         return nextFireDate;
     }
 
+    @Override
     public long getTaskRuntime() {
         return taskRuntime;
     }
 
+    @Override
     public Date getScheduledFireDate() {
         return scheduledFireDate;
     }
 
+    @Override
     public int getTriggerRefireCount() {
         return triggerRefireCount;
     }
 
+    @Override
     public Date getTriggerFinalFireDate() {
         return triggerFinalFireDate;
     }
 
+    @Override
     public Date getTriggerEndDate() {
         return triggerEndDate;
     }
 
+    @Override
     public Date getTriggerStartDate() {
         return triggerStartDate;
     }

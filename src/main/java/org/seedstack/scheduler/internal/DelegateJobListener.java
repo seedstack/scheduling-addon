@@ -1,11 +1,10 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package org.seedstack.scheduler.internal;
 
 import java.util.HashMap;
@@ -18,9 +17,10 @@ import org.quartz.JobListener;
 import org.seedstack.scheduler.TaskListener;
 import org.seedstack.seed.SeedException;
 
+@SuppressWarnings("rawtypes")
 class DelegateJobListener implements JobListener {
     @Inject
-    Map<String, Set<TaskListener>> taskListeners = new HashMap<String, Set<TaskListener>>();
+    Map<String, Set<TaskListener>> taskListeners = new HashMap<>();
 
     @Override
     public String getName() {

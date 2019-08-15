@@ -1,11 +1,10 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package org.seedstack.scheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +25,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.seedstack.scheduler.fixtures.ProgrammaticFiredTask;
 import org.seedstack.seed.SeedException;
-import org.seedstack.seed.it.SeedITRunner;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
 
 import com.google.common.collect.ImmutableMap;
 

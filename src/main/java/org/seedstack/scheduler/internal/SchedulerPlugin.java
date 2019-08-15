@@ -1,11 +1,10 @@
 /*
- * Copyright © 2013-2018, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 package org.seedstack.scheduler.internal;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -36,6 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Plugin for Quartz scheduler integration.
  */
+@SuppressWarnings("rawtypes")
 public class SchedulerPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerPlugin.class);
     @Inject
@@ -47,7 +47,7 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
     private Specification<Class<?>> specificationForJobs;
     private Specification<Class<?>> specificationForJobListeners;
     private Collection<Class<?>> jobClasses;
-    private Multimap<Class<? extends Task>, Class<? extends TaskListener>> jobListenerMap = ArrayListMultimap.create();
+    private Multimap<Class<? extends Task>, Class<? extends TaskListener<? extends Task>>> jobListenerMap = ArrayListMultimap.create();
     private Scheduler scheduler;
 
     @Override
@@ -65,6 +65,7 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public InitState initialize(InitContext initContext) {
         Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext
                 .scannedTypesBySpecification();
@@ -79,9 +80,8 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
                 Type typeVariable = getParametrizedTypeOfJobListener(listenerClass);
                 if (typeVariable != null && Task.class.isAssignableFrom((Class<?>) typeVariable)) {
                     // bind the Task to the listener
-                    //noinspection unchecked
                     jobListenerMap.put((Class<? extends Task>) typeVariable,
-                            (Class<? extends TaskListener>) listenerClass);
+                            (Class<? extends TaskListener<? extends Task>>) listenerClass);
                 }
             }
         }
@@ -151,13 +151,13 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void scheduleAnnotatedTasks() {
         try {
             for (Class<?> candidateClass : jobClasses) {
                 if (Task.class.isAssignableFrom(candidateClass)) {
                     Scheduled annotation = candidateClass.getAnnotation(Scheduled.class);
                     if (annotation != null && StringUtils.isNotBlank(annotation.value())) {
-                        //noinspection unchecked
                         Class<? extends Task> taskClass = (Class<? extends Task>) candidateClass;
                         scheduledTasks.scheduledTask(taskClass).schedule();
                     }

@@ -1,4 +1,9 @@
-# Version 3.1.1 (2018-08-22)??
+# Version 3.2.0 (2019-12-??)
+
+* [chg] Updated for SeedStack 19.7.2
+* [chg] Updated Quartz to 2.3.2
+
+# Version 3.1.1 (2018-08-22)
 
 * [new] Adds the capability to reschedule/unschedule a task by its trigger key and group.
 * [brk] withTrigger now receives Trigger instead of Object 
