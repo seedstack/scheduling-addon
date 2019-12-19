@@ -1,6 +1,6 @@
-# Version 3.2.0 (2019-12-??)
+# Version 3.2.0 (2019-12-19)
 
-* [chg] Updated for SeedStack 19.7.2
+* [chg] Updated for SeedStack 19.11
 * [chg] Updated Quartz to 2.3.2
 
 # Version 3.1.1 (2018-08-22)
