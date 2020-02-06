@@ -21,7 +21,7 @@ import org.seedstack.scheduler.Task;
 class TaskDelegateJob implements Job {
     private final Task task;
 
-    TaskDelegateJob(Task task) {
+    public TaskDelegateJob(Task task) {
         this.task = task;
     }
 

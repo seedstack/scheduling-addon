@@ -113,7 +113,8 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     private Class<? extends Task> taskClass;
 
     ScheduledTaskBuilderImpl(final Class<? extends Task> taskClass, Scheduler scheduler, Application application) {
-        this.jobClass = TaskDelegateJob.class;
+
+        this.jobClass = JobDelegateFactory.computeDelegateClass(taskClass);
         this.scheduler = scheduler;
         this.taskClass = taskClass;
 
