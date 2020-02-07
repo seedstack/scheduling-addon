@@ -11,6 +11,7 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.PersistJobDataAfterExecution;
 import org.seedstack.scheduler.Task;
+import org.seedstack.seed.SeedException;
 
 class JobDelegateFactory {
 
@@ -19,14 +20,11 @@ class JobDelegateFactory {
     }
 
     static Job buildJobWrapper(Task task) {
-
         try {
             return computeDelegateClass(task.getClass()).getConstructor(Task.class).newInstance(task);
         } catch (Exception e) {
-            // TODO: Put a proper logger / error handler here
-            throw new RuntimeException(e);
+            throw SeedException.wrap(e, SchedulerErrorCode.CANNOT_INITIALIZE_TASK);
         }
-
     }
 
     static Class<? extends TaskDelegateJob> computeDelegateClass(Class<? extends Task> taskClazz) {

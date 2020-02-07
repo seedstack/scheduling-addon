@@ -10,6 +10,7 @@ package org.seedstack.scheduler.internal;
 import org.seedstack.shed.exception.ErrorCode;
 
 enum SchedulerErrorCode implements ErrorCode {
+	CANNOT_INITIALIZE_TASK,
     EXCEPTION_IN_LISTENER,
     FAILED_TO_INSTANTIATE_TASK,
     IMPOSSIBLE_TO_USE_CRON_AND_TRIGGER,

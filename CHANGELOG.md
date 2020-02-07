@@ -1,3 +1,7 @@
+# Version 3.2.? (2020-02-??)
+
+* [new] Task now honor @DisallowConcurrentExecution and @PersistJobDataAfterExecution as if they were a pure Quartz Job
+
 # Version 3.2.0 (2019-12-19)
 
 * [chg] Updated for SeedStack 19.11
