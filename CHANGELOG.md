@@ -1,6 +1,6 @@
-# Version 3.2.? (2020-02-??)
+# Version 3.3.0 (2020-02-08)
 
-* [new] Task now honor @DisallowConcurrentExecution and @PersistJobDataAfterExecution as if they were a pure Quartz Job
+* [new] Task now honor `@DisallowConcurrentExecution` and `@PersistJobDataAfterExecution` as if they were a pure Quartz Job.
 
 # Version 3.2.0 (2019-12-19)
 
