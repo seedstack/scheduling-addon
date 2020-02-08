@@ -36,8 +36,9 @@ class GuiceTaskFactory implements JobFactory {
         // create new Job
         String taskClassName = bundle.getJobDetail().getKey().getGroup();
         try {
-            return new TaskDelegateJob(
-                    injector.getInstance((Class<? extends Task>) Class.forName(taskClassName)));
+            return JobDelegateFactory
+                    .buildJobWrapper(injector.getInstance((Class<? extends Task>) Class.forName(taskClassName)));
+
         } catch (Exception ex) {
             throw SeedException.wrap(ex, SchedulerErrorCode.FAILED_TO_INSTANTIATE_TASK)
                     .put("taskClass", taskClassName);
