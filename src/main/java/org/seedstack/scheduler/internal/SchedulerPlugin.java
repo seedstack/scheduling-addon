@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,19 +7,13 @@
  */
 package org.seedstack.scheduler.internal;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.Context;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
-import javax.inject.Inject;
-import org.apache.commons.lang.StringUtils;
-import org.kametic.specifications.Specification;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
@@ -31,6 +25,15 @@ import org.seedstack.seed.SeedException;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import static org.seedstack.shed.reflect.ClassPredicates.classImplements;
 
 /**
  * Plugin for Quartz scheduler integration.
@@ -44,8 +47,8 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
     private static GuiceTaskFactory guiceTaskFactory;
     @Inject
     private static ScheduledTasks scheduledTasks;
-    private Specification<Class<?>> specificationForJobs;
-    private Specification<Class<?>> specificationForJobListeners;
+    private Predicate<Class<?>> specificationForJobs;
+    private Predicate<Class<?>> specificationForJobListeners;
     private Collection<Class<?>> jobClasses;
     private Multimap<Class<? extends Task>, Class<? extends TaskListener<? extends Task>>> jobListenerMap = ArrayListMultimap.create();
     private Scheduler scheduler;
@@ -59,16 +62,17 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         specificationForJobs = classImplements(Task.class);
         specificationForJobListeners = classImplements(TaskListener.class);
-        return classpathScanRequestBuilder().specification(specificationForJobs)
-                .specification(specificationForJobListeners)
+        return classpathScanRequestBuilder()
+                .predicate(specificationForJobs)
+                .predicate(specificationForJobListeners)
                 .build();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public InitState initialize(InitContext initContext) {
-        Map<Specification, Collection<Class<?>>> scannedTypesBySpecification = initContext
-                .scannedTypesBySpecification();
+        Map<Predicate<Class<?>>, Collection<Class<?>>> scannedTypesBySpecification = initContext
+                .scannedTypesByPredicate();
 
         // Associates - scan for nativeUnitModule
         jobClasses = scannedTypesBySpecification.get(specificationForJobs);
@@ -157,7 +161,7 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
             for (Class<?> candidateClass : jobClasses) {
                 if (Task.class.isAssignableFrom(candidateClass)) {
                     Scheduled annotation = candidateClass.getAnnotation(Scheduled.class);
-                    if (annotation != null && StringUtils.isNotBlank(annotation.value())) {
+                    if (annotation != null && !Strings.isNullOrEmpty(annotation.value())) {
                         Class<? extends Task> taskClass = (Class<? extends Task>) candidateClass;
                         scheduledTasks.scheduledTask(taskClass).schedule();
                     }

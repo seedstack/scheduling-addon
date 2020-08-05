@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,24 +7,8 @@
  */
 package org.seedstack.scheduler.internal;
 
-import static java.util.TimeZone.getDefault;
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
-
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.UUID;
-import org.apache.commons.lang.StringUtils;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
-import org.quartz.JobKey;
-import org.quartz.ObjectAlreadyExistsException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerKey;
+import com.google.common.base.Strings;
+import org.quartz.*;
 import org.seedstack.scheduler.Scheduled;
 import org.seedstack.scheduler.ScheduledTaskBuilder;
 import org.seedstack.scheduler.Task;
@@ -32,6 +16,15 @@ import org.seedstack.seed.Application;
 import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
+
+import static java.util.TimeZone.getDefault;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * DSL to produce {@code Job} and add to a {@code Scheduler}, and associate the related {@code Trigger} with it.
@@ -213,10 +206,10 @@ class ScheduledTaskBuilderImpl implements ScheduledTaskBuilder {
     @Override
     public void schedule() {
 
-        if (StringUtils.isBlank(cronExpression) && trigger == null) {
+        if (Strings.isNullOrEmpty(cronExpression) && trigger == null) {
             throw SeedException.createNew(SchedulerErrorCode.MISSING_CRON_EXPRESSION).put("class", jobClass.getName());
         }
-        if (StringUtils.isNotBlank(cronExpression) && trigger != null) {
+        if (!Strings.isNullOrEmpty(cronExpression) && trigger != null) {
             throw SeedException.createNew(SchedulerErrorCode.IMPOSSIBLE_TO_USE_CRON_AND_TRIGGER)
                     .put("class", jobClass.getName());
         }

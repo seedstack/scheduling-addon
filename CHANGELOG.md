@@ -1,3 +1,7 @@
+# Version 3.3.1 (2020-08-05)
+
+* [chg] Updated for seed 3.10+
+
 # Version 3.3.0 (2020-02-08)
 
 * [new] Task now honor `@DisallowConcurrentExecution` and `@PersistJobDataAfterExecution` as if they were a pure Quartz Job.

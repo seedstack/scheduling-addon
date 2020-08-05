@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +13,8 @@ import org.quartz.PersistJobDataAfterExecution;
 import org.seedstack.scheduler.Task;
 import org.seedstack.seed.SeedException;
 
+import java.lang.reflect.InvocationTargetException;
+
 class JobDelegateFactory {
 
     private JobDelegateFactory() {
@@ -22,7 +24,7 @@ class JobDelegateFactory {
     static Job buildJobWrapper(Task task) {
         try {
             return computeDelegateClass(task.getClass()).getConstructor(Task.class).newInstance(task);
-        } catch (Exception e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw SeedException.wrap(e, SchedulerErrorCode.CANNOT_INITIALIZE_TASK);
         }
     }
