@@ -71,13 +71,12 @@ public class SchedulerPlugin extends AbstractSeedPlugin {
     @Override
     @SuppressWarnings("unchecked")
     public InitState initialize(InitContext initContext) {
-        Map<Predicate<Class<?>>, Collection<Class<?>>> scannedTypesBySpecification = initContext
-                .scannedTypesByPredicate();
+        Map<Predicate<Class<?>>, Collection<Class<?>>> scannedTypesByPredicate = initContext.scannedTypesByPredicate();
 
         // Associates - scan for nativeUnitModule
-        jobClasses = scannedTypesBySpecification.get(specificationForJobs);
+        jobClasses = scannedTypesByPredicate.get(specificationForJobs);
 
-        Collection<Class<?>> listenerClasses = scannedTypesBySpecification.get(specificationForJobListeners);
+        Collection<Class<?>> listenerClasses = scannedTypesByPredicate.get(specificationForJobListeners);
         for (Class<?> listenerClass : listenerClasses) {
             if (TaskListener.class.isAssignableFrom(listenerClass)) {
                 // Get the type of Job to listen
